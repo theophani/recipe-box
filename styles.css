@@ -3,3 +3,7 @@ body {
   font-family: Georgia;
   color: #333;
 }
+
+.selected {
+  background: yellow;
+}
