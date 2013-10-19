@@ -2,19 +2,32 @@ body {
   font-size: 16px;
   font-family: Georgia;
   color: #333;
+  margin: 0;
+  padding: 0;
 }
 
-.filtered .ingredient {
+.filtered .ingredient, .filtered .recipe {
   display: none;
 }
 
-.ingredient.also_with_selected, .ingredient.selected {
+.ingredient.also_with_selected, .ingredient.selected, .recipe.selected {
   display: list-item;
 }
 
-.ingredient.also_with_selected {
+.ingredient.selected {
+  background: yellow;
 }
 
-.selected {
-  background: yellow;
+body > div {
+  box-model: border-box;
+  width: 50%;
+  float: left;
+}
+
+.ingredients_list {
+  background-color: pink;
+}
+
+.recipes_list {
+  background-color: salmon;
 }
