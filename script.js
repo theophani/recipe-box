@@ -67,28 +67,6 @@ function prepare_ingredients (recipe_ingredients) {
   ingredients_list.initialize(box);
 }
 
-function ingredient_class (ingredient, selected, also_with_selected) {
-  var also_with = 0;
-
-  if (!selected.length) {
-    return "ingredient";
-  }
-
-  if (selected.indexOf(ingredient) > -1) {
-    return "ingredient selected";
-  }
-
-  also_with = also_with_selected.filter(function (selected) {
-    return selected === ingredient;
-  });
-
-  if (also_with.length === selected.length) {
-    return "ingredient also_with_selected";
-  } else {
-    return "ingredient";
-  }
-}
-
 var ingredients_list = {
   initialize: function (box) {
     var self = this;
@@ -122,6 +100,29 @@ var ingredients_list = {
     });
     this.also_with_selected = also_with_selected;
   },
+  ingredient_class: function (ingredient) {
+    var selected = this.selected
+    var also_with_selected = this.also_with_selected;
+    var also_with = 0;
+
+    if (!selected.length) {
+      return "ingredient";
+    }
+
+    if (selected.indexOf(ingredient) > -1) {
+      return "ingredient selected";
+    }
+
+    also_with = also_with_selected.filter(function (selected) {
+      return selected === ingredient;
+    });
+
+    if (also_with.length === selected.length) {
+      return "ingredient also_with_selected";
+    } else {
+      return "ingredient";
+    }
+  },
   render: function () {
     var self = this;
     var any_selected = !!this.selected.length;
@@ -129,7 +130,7 @@ var ingredients_list = {
     this.items.forEach(function (item) {
       var ingredientKey = item.dataset.ingredientKey;
       var ingredient = self.box.ingredients[ingredientKey];
-      item.className = ingredient_class(ingredient, self.selected, self.also_with_selected);
+      item.className = self.ingredient_class(ingredient);
     });
   },
   make_item: function (ingredient) {
