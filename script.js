@@ -64,45 +64,31 @@ function build_box (recipe_ingredients) {
 
 function prepare_ingredients (recipe_ingredients) {
   var box = build_box(recipe_ingredients);
-  ingredients_list.initialize(box);
+  ingredients_list(box);
 }
 
-var ingredients_list = {
-  initialize: function (box) {
-    var self = this;
-    this.box = box;
-    this.selected = [];
-    this.ul = document.createElement('ul');
-    this.items = Object.keys(this.box.ingredients).sort().map(this.make_item);
-    this.items.forEach(function (li) { self.ul.appendChild(li); });
+function ingredients_list (box) {
+  var selected = [];
+  var also_with_selected = [];
+  var ul = document.createElement('ul');
+  var items;
 
-    document.body.appendChild(this.ul);
-
-    this.ul.addEventListener('click', function (e) {
-      if (e.target.tagName !== 'LI') return;
-      var ingredient = self.box.ingredients[e.target.dataset.ingredientKey];
-      self.toggle(ingredient);
-      self.render();
-    });
-  },
-  toggle: function (ingredient) {
-    var index = this.selected.indexOf(ingredient);
+  function toggle (ingredient) {
+    var index = selected.indexOf(ingredient);
     also_with_selected = [];
     if (index < 0) {
-      this.selected.push(ingredient);
+      selected.push(ingredient);
     } else {
-      this.selected.splice(index, 1);
+      selected.splice(index, 1);
     }
-    this.selected.forEach(function(selected) {
-      selected.also_with.forEach(function (ingredient) {
+    selected.forEach(function(item) {
+      item.also_with.forEach(function (ingredient) {
         also_with_selected.push(ingredient);
       });
     });
-    this.also_with_selected = also_with_selected;
-  },
-  ingredient_class: function (ingredient) {
-    var selected = this.selected
-    var also_with_selected = this.also_with_selected;
+  }
+
+  function ingredient_class (ingredient) {
     var also_with = 0;
 
     if (!selected.length) {
@@ -122,25 +108,37 @@ var ingredients_list = {
     } else {
       return "ingredient";
     }
-  },
-  render: function () {
-    var self = this;
-    var any_selected = !!this.selected.length;
-    this.ul.className = any_selected ? "filtered" : "";
-    this.items.forEach(function (item) {
+  }
+
+  function render () {
+    var any_selected = !!selected.length;
+    ul.className = any_selected ? "filtered" : "";
+    items.forEach(function (item) {
       var ingredientKey = item.dataset.ingredientKey;
-      var ingredient = self.box.ingredients[ingredientKey];
-      item.className = self.ingredient_class(ingredient);
+      var ingredient = box.ingredients[ingredientKey];
+      item.className = ingredient_class(ingredient);
     });
-  },
-  make_item: function (ingredient) {
+  }
+
+  function make_item (ingredient) {
     var item = document.createElement('li');
     item.innerHTML = ingredient;
     item.className = "ingredient";
     item.dataset.ingredientKey = ingredient;
     return item;
   }
-};
+
+  items = Object.keys(box.ingredients).sort().map(make_item);
+  items.forEach(function (li) { ul.appendChild(li); });
+  document.body.appendChild(ul);
+
+  ul.addEventListener('click', function (e) {
+    if (e.target.tagName !== 'LI') return;
+    var ingredient = box.ingredients[e.target.dataset.ingredientKey];
+    toggle(ingredient);
+    render();
+  });
+}
 
 ajax({
   url: "/recipe_ingredients.json",
