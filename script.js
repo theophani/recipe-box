@@ -1,4 +1,15 @@
-function build_box (ingredients, recipes) {
+function values_per_key (pairs, key_name, value_name) {
+  return pairs.reduce(function (results, pair) {
+    results[pair[key_name]] = results[pair[key_name]] || [];
+    results[pair[key_name]].push(pair[value_name]);
+    return results;
+  }, {});
+}
+
+function build_box (recipe_ingredients) {
+  var ingredients = values_per_key(recipe_ingredients, "ingredient", "r_id");
+  var recipes = values_per_key(recipe_ingredients, "r_id", "ingredient");
+
   var box = {
     ingredients: {},
     recipes: {}
@@ -51,46 +62,84 @@ function build_box (ingredients, recipes) {
   return box;
 }
 
-function values_per_key (pairs, key_name, value_name) {
-  return pairs.reduce(function (results, pair) {
-    results[pair[key_name]] = results[pair[key_name]] || [];
-    results[pair[key_name]].push(pair[value_name]);
-    return results;
-  }, {});
-}
-
-function make_item (ingredient) {
-  var item = document.createElement('li');
-  item.innerHTML = ingredient;
-  item.className = "ingredient";
-  return item;
-};
-
-function display_ingredients (ingredients) {
-  var list = document.createElement('ul');
-  var items =   Object.keys(ingredients).sort().map(make_item);
-  items.forEach(function (item) { list.appendChild(item); });
-  document.body.appendChild(list);
-  list.addEventListener('ingredient:clicked', function (e) {
-    console.log(e, e.detail);
-  });
-  list.addEventListener('click', function (e) {
-    if (e.target.tagName !== 'LI') return;
-    var ingredient = e.target.innerHTML;
-    var detail = { ingredient: ingredient };
-    var ev = new CustomEvent('ingredient:clicked', { detail: detail, bubbles: true });
-    list.dispatchEvent(ev);
-  });
-}
-
 function prepare_ingredients (recipe_ingredients) {
-  var ingredients = values_per_key(recipe_ingredients, "ingredient", "r_id");
-  var recipes = values_per_key(recipe_ingredients, "r_id", "ingredient");
-  var box = build_box(ingredients, recipes);
-
-  display_ingredients(ingredients);
-  console.log(box)
+  var box = build_box(recipe_ingredients);
+  ingredients_list.initialize(box);
 }
+
+function ingredient_class (ingredient, selected, also_with_selected) {
+  var also_with = 0;
+
+  if (!selected.length) {
+    return "ingredient";
+  }
+
+  if (selected.indexOf(ingredient) > -1) {
+    return "ingredient selected";
+  }
+
+  also_with = also_with_selected.filter(function (selected) {
+    return selected === ingredient;
+  });
+
+  if (also_with.length === selected.length) {
+    return "ingredient also_with_selected";
+  } else {
+    return "ingredient";
+  }
+}
+
+var ingredients_list = {
+  initialize: function (box) {
+    var self = this;
+    this.box = box;
+    this.selected = [];
+    this.ul = document.createElement('ul');
+    this.items = Object.keys(this.box.ingredients).sort().map(this.make_item);
+    this.items.forEach(function (li) { self.ul.appendChild(li); });
+
+    document.body.appendChild(this.ul);
+
+    this.ul.addEventListener('click', function (e) {
+      if (e.target.tagName !== 'LI') return;
+      var ingredient = self.box.ingredients[e.target.dataset.ingredientKey];
+      self.toggle(ingredient);
+      self.render();
+    });
+  },
+  toggle: function (ingredient) {
+    var index = this.selected.indexOf(ingredient);
+    also_with_selected = [];
+    if (index < 0) {
+      this.selected.push(ingredient);
+    } else {
+      this.selected.splice(index, 1);
+    }
+    this.selected.forEach(function(selected) {
+      selected.also_with.forEach(function (ingredient) {
+        also_with_selected.push(ingredient);
+      });
+    });
+    this.also_with_selected = also_with_selected;
+  },
+  render: function () {
+    var self = this;
+    var any_selected = !!this.selected.length;
+    this.ul.className = any_selected ? "filtered" : "";
+    this.items.forEach(function (item) {
+      var ingredientKey = item.dataset.ingredientKey;
+      var ingredient = self.box.ingredients[ingredientKey];
+      item.className = ingredient_class(ingredient, self.selected, self.also_with_selected);
+    });
+  },
+  make_item: function (ingredient) {
+    var item = document.createElement('li');
+    item.innerHTML = ingredient;
+    item.className = "ingredient";
+    item.dataset.ingredientKey = ingredient;
+    return item;
+  }
+};
 
 ajax({
   url: "/recipe_ingredients.json",

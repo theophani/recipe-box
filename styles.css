@@ -4,6 +4,17 @@ body {
   color: #333;
 }
 
+.filtered .ingredient {
+  display: none;
+}
+
+.ingredient.also_with_selected, .ingredient.selected {
+  display: list-item;
+}
+
+.ingredient.also_with_selected {
+}
+
 .selected {
   background: yellow;
 }
