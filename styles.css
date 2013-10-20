@@ -6,6 +6,21 @@ body {
   padding: 0;
 }
 
+ul {
+  margin: 0;
+  padding: 5px 0;
+}
+
+li {
+  margin: 0;
+  padding: 5px 20px;
+  list-style: none;
+}
+
+li:hover {
+  background-color: hotpink;
+}
+
 .filtered .ingredient, .filtered .recipe {
   display: none;
 }
@@ -30,4 +45,7 @@ body > div {
 
 .recipes_list {
   background-color: salmon;
+  position: fixed;
+  right: 0;
+  top: 0;
 }
