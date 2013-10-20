@@ -70,17 +70,24 @@ function ingredients_list (box) {
 
   function toggle (ingredient) {
     var index = selected.indexOf(ingredient);
-    also_with_selected = [];
+
     if (index < 0) {
       selected.push(ingredient);
     } else {
       selected.splice(index, 1);
     }
-    selected.forEach(function(item) {
-      item.also_with.forEach(function (ingredient) {
-        also_with_selected.push(ingredient);
+
+    also_with_selected = Object.keys(box.recipes).map(function (key) {
+      return box.recipes[key];
+    }).filter(function (recipe) {
+      return selected.every(function (item) {
+        return recipe.ingredients.some(function (ingredient) {
+          return ingredient === item;
+        });
       });
-    });
+    }).reduce(function (combined, recipe) {
+      return combined.concat(recipe.ingredients);
+    }, []);
   }
 
   function ingredient_class (ingredient) {
@@ -94,11 +101,7 @@ function ingredients_list (box) {
       return "ingredient selected";
     }
 
-    also_with = also_with_selected.filter(function (selected) {
-      return selected === ingredient;
-    });
-
-    if (also_with.length === selected.length) {
+    if (also_with_selected.indexOf(ingredient) > -1) {
       return "ingredient also_with_selected";
     } else {
       return "ingredient";
