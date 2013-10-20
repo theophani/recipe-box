@@ -6,6 +6,26 @@ function values_per_key (pairs, key_name, value_name) {
   }, {});
 }
 
+function ingredients_lists(object) {
+  return Object.keys(object).map(function (key) {
+    return object[key].ingredients;
+  });
+}
+
+function is_subset (subset) {
+  return function (superset) {
+    return subset.every(function (i) {
+      return superset.some(function (j) {
+        return i === j;
+      });
+    });
+  };
+}
+
+function concat (a, b) {
+  return a.concat(b);
+}
+
 function build_box (recipe_ingredients) {
   var ingredients = values_per_key(recipe_ingredients, "ingredient", "r_id");
   var recipes = values_per_key(recipe_ingredients, "r_id", "ingredient");
@@ -77,17 +97,9 @@ function ingredients_list (box) {
       selected.splice(index, 1);
     }
 
-    also_with_selected = Object.keys(box.recipes).map(function (key) {
-      return box.recipes[key];
-    }).filter(function (recipe) {
-      return selected.every(function (item) {
-        return recipe.ingredients.some(function (ingredient) {
-          return ingredient === item;
-        });
-      });
-    }).reduce(function (combined, recipe) {
-      return combined.concat(recipe.ingredients);
-    }, []);
+    also_with_selected = ingredients_lists(box.recipes)
+      .filter(is_subset(selected))
+      .reduce(concat, []);
   }
 
   function ingredient_class (ingredient) {
