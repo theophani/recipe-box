@@ -4,6 +4,7 @@ body {
   color: #333;
   margin: 0;
   padding: 0;
+  background-color: pink;
 }
 
 ul {
@@ -37,6 +38,7 @@ body > div {
   box-model: border-box;
   width: 50%;
   float: left;
+  height: 100%;
 }
 
 .ingredients_list {
