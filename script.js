@@ -44,7 +44,6 @@ function build_box (recipe_ingredients) {
 
   Object.keys(ingredients).forEach(function (key) {
     var ingredient = {
-      "also_with": [],
       "recipes": [],
       "name": key
     };
@@ -67,15 +66,6 @@ function build_box (recipe_ingredients) {
 
     recipes[key].forEach(function (ingredientKey) {
       recipe.ingredients.push(box.ingredients[ingredientKey]);
-    });
-
-    recipe.ingredients.forEach(function (ingredient) {
-      recipe.ingredients.forEach(function (partner_ingredient) {
-        var same = ingredient == partner_ingredient;
-        if (!same && ingredient.also_with.indexOf(partner_ingredient) < 0) {
-          ingredient.also_with.push(partner_ingredient);
-        }
-      });
     });
   });
 
