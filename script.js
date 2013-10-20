@@ -93,8 +93,6 @@ function ingredients_list (box) {
   }
 
   function ingredient_class (ingredient) {
-    var also_with;
-
     if (!selected.length) {
       return "ingredient";
     }
@@ -105,9 +103,9 @@ function ingredients_list (box) {
 
     if (also_with_selected.indexOf(ingredient) > -1) {
       return "ingredient also_with_selected";
-    } else {
-      return "ingredient";
     }
+
+    return "ingredient";
   }
 
   function render () {
@@ -152,23 +150,15 @@ function recipes_list (box) {
   var items;
 
   function recipe_class (recipe) {
-    var has_selected = 0;
-
     if (!selected_ingredients.length) {
       return "recipe";
     }
 
-    selected_ingredients.forEach(function (ingredient) {
-      if (recipe.ingredients.indexOf(ingredient) > -1) {
-        has_selected++;
-      }
-    });
-
-    if (has_selected === selected_ingredients.length) {
+    if (is_subset(selected_ingredients)(recipe.ingredients)) {
       return "recipe selected";
-    } else {
-      return "recipe";
     }
+
+    return "recipe";
   }
 
   function render () {
