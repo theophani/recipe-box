@@ -147,7 +147,8 @@ function ingredients_list (box) {
 
 function recipes_list (box) {
   var ul = document.createElement('ul');
-  var items;
+  var items = [];
+  var selected_ingredients = [];
 
   function recipe_class (recipe) {
     if (!selected_ingredients.length) {
@@ -171,17 +172,22 @@ function recipes_list (box) {
     });
   }
 
-  function make_item (recipe) {
+  function make_item (recipeKey) {
+    var recipe = box.recipes[recipeKey];
     var item = document.createElement('li');
-    item.innerHTML = recipe;
-    item.className = "recipe";
-    item.dataset.recipeKey = recipe;
+    item.innerHTML = recipe.key;
+    item.className = recipe_class(recipe);
+    item.dataset.recipeKey = recipeKey;
     return item;
   }
 
-  items = Object.keys(box.recipes).sort().map(make_item);
-  items.forEach(function (li) { ul.appendChild(li); });
-  document.querySelector('.recipes_list').appendChild(ul);
+  function display_recipes () {
+    items = Object.keys(box.recipes).sort().map(make_item);
+    items.forEach(function (li) { ul.appendChild(li); });
+    document.querySelector('.recipes_list').appendChild(ul);
+  }
+
+  display_recipes();
 
   document.addEventListener('ingredient:selected', function (e) {
     selected_ingredients = e.detail.selected_ingredients;
