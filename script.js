@@ -175,10 +175,24 @@ function recipes_list (box) {
   function make_item (recipeKey) {
     var recipe = box.recipes[recipeKey];
     var item = document.createElement('li');
-    item.innerHTML = recipe.key;
+    item.innerHTML = recipe.title;
     item.className = recipe_class(recipe);
     item.dataset.recipeKey = recipeKey;
     return item;
+  }
+
+  function put_in_box (recipes) {
+    Object.keys(recipes).forEach(function (key) {
+      var recipe = recipes[key];
+      if (box.recipes[key]) {
+        box.recipes[key].title = recipe.title;
+        box.recipes[key].contents = recipe.contents;
+        box.recipes[key].recommended = recipe.recommended;
+        box.recipes[key].remark = recipe.remark;
+      } else {
+        console.log(recipe.title + ' (id ' + recipe.r_id + ') is missing!');
+      }
+    });
   }
 
   function display_recipes () {
@@ -187,11 +201,20 @@ function recipes_list (box) {
     document.querySelector('.recipes_list').appendChild(ul);
   }
 
-  display_recipes();
+  function prepare_recipes (recipes) {
+    put_in_box(recipes);
+    display_recipes();
+  }
 
   document.addEventListener('ingredient:selected', function (e) {
     selected_ingredients = e.detail.selected_ingredients;
     render();
+  });
+
+  ajax({
+    url: "/recipes.json",
+    success: prepare_recipes,
+    error: function () { console.log(arguments) }
   });
 }
 
