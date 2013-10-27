@@ -44,12 +44,17 @@ body > div {
 
 .ingredients_list {
   background-color: lightblue;
+  position: fixed;
+  overflow-x: scroll;
+  left: 0;
+  top: 0;
 }
 
 .recipes_list {
   background-color: #6F4E37;
   position: fixed;
-  right: 0;
+  overflow-x: scroll;
+  left: 50%;
   top: 0;
   color: ivory;
 }
