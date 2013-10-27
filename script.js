@@ -1,3 +1,12 @@
+function pushState (selected) {
+  var selected_ingredients = selected.map(function (i) {
+    return i.name;
+  });
+  var pageUrl = "?ingredients=" + selected_ingredients.join(':');
+  var pageState = { selected_ingredients: selected_ingredients };
+  window.history.pushState(pageState, "", pageUrl);
+}
+
 function values_per_key (pairs, key_name, value_name) {
   return pairs.reduce(function (results, pair) {
     results[pair[key_name]] = results[pair[key_name]] || [];
@@ -140,10 +149,21 @@ function ingredients_list (box) {
     render();
   });
 
+  window.onpopstate = function (e) {
+    var selected_ingredients = e.state ? e.state.selected_ingredients : [];
+    selected = []; // reset all
+    selected_ingredients.forEach(function (name) {
+      var ingredient = box.ingredients[name]
+      toggle(ingredient);
+    });
+    broadcast();
+  };
+
   ul.addEventListener('click', function (e) {
     if (e.target.tagName !== 'LI') return;
     var ingredient = box.ingredients[e.target.dataset.ingredientKey];
     toggle(ingredient);
+    pushState(selected);
     broadcast();
   });
 }
