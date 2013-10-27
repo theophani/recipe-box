@@ -36,7 +36,7 @@ li:hover {
 }
 
 body > div {
-  box-model: border-box;
+  box-sizing: border-box;
   width: 50%;
   float: left;
   height: 100%;
@@ -85,3 +85,37 @@ body > div {
   color: ivory;
 }
 
+/* third pane */
+
+.recipe_viewer {
+  background-color: ivory;
+  position: fixed;
+  overflow-x: scroll;
+  left: 66%;
+  top: 0;
+  color: #333;
+  width: 34%;
+  padding: 20px;
+}
+
+body > div {
+  -webkit-transition: width 500ms ease, left 500ms ease;
+  transition: width 500ms ease, left 500ms ease;
+}
+
+.viewing_recipe .ingredients_list {
+  width: 33%;
+}
+
+.viewing_recipe .recipes_list {
+  width: 33%;
+  left: 33%;
+}
+
+.recipe_viewer {
+  left: 100%;
+}
+
+.viewing_recipe .recipe_viewer {
+  left: 66%;
+}
