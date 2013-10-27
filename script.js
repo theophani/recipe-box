@@ -135,6 +135,21 @@ function ingredients_list (box) {
     return item;
   }
 
+  function set_selected (selected_ingredients) {
+    selected = []; // reset all
+    selected_ingredients.forEach(function (name) {
+      toggle(box.ingredients[name]);
+    });
+    broadcast();
+  }
+
+  function init_from_query () {
+    var matches = window.location.search.match(/ingredients=(.*)/);
+    if (matches) {
+      set_selected(decodeURIComponent(matches[1]).split(":"));
+    }
+  }
+
   function broadcast () {
     var data = { detail: { selected_ingredients: selected } };
     var evt = new CustomEvent('ingredient:selected', data)
@@ -151,12 +166,7 @@ function ingredients_list (box) {
 
   window.onpopstate = function (e) {
     var selected_ingredients = e.state ? e.state.selected_ingredients : [];
-    selected = []; // reset all
-    selected_ingredients.forEach(function (name) {
-      var ingredient = box.ingredients[name]
-      toggle(ingredient);
-    });
-    broadcast();
+    set_selected(selected_ingredients);
   };
 
   ul.addEventListener('click', function (e) {
@@ -166,6 +176,8 @@ function ingredients_list (box) {
     pushState(selected);
     broadcast();
   });
+
+  init_from_query();
 }
 
 function recipes_list (box) {
