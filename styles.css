@@ -4,7 +4,7 @@ body {
   color: #333;
   margin: 0;
   padding: 0;
-  background-color: pink;
+  background-color: lightblue;
 }
 
 ul {
@@ -19,7 +19,8 @@ li {
 }
 
 li:hover {
-  background-color: hotpink;
+  background-color: yellow;
+  color: #333;
 }
 
 .filtered .ingredient, .filtered .recipe {
@@ -31,7 +32,7 @@ li:hover {
 }
 
 .ingredient.selected {
-  background: yellow;
+  background-color: rgb(189, 255, 105);
 }
 
 body > div {
@@ -42,12 +43,40 @@ body > div {
 }
 
 .ingredients_list {
-  background-color: pink;
+  background-color: lightblue;
 }
 
 .recipes_list {
-  background-color: salmon;
+  background-color: #6F4E37;
   position: fixed;
   right: 0;
   top: 0;
+  color: ivory;
 }
+
+.recipes_list h1 {
+  font-size: 1em;
+  margin: 0.5em 0;
+  font-weight: normal;
+}
+
+.recipes_list li {
+  padding-bottom: 1em;
+}
+
+.ingredients {
+  line-height: 1.75;
+}
+
+.ingredients span {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 2px 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.recipes_list li:hover {
+  background-color: rgb(12, 138, 179);
+  color: ivory;
+}
+

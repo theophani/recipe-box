@@ -136,11 +136,14 @@ function ingredients_list (box) {
   items.forEach(function (li) { ul.appendChild(li); });
   document.querySelector('.ingredients_list').appendChild(ul);
 
+  document.addEventListener('ingredient:selected', function (e) {
+    render();
+  });
+
   ul.addEventListener('click', function (e) {
     if (e.target.tagName !== 'LI') return;
     var ingredient = box.ingredients[e.target.dataset.ingredientKey];
     toggle(ingredient);
-    render();
     broadcast();
   });
 }
@@ -149,6 +152,8 @@ function recipes_list (box) {
   var ul = document.createElement('ul');
   var items = [];
   var selected_ingredients = [];
+  var template =  '<h1>TITLE</h1>';
+      template += '<div class="ingredients">INGREDIENTS</div>';
 
   function recipe_class (recipe) {
     if (!selected_ingredients.length) {
@@ -175,7 +180,12 @@ function recipes_list (box) {
   function make_item (recipeKey) {
     var recipe = box.recipes[recipeKey];
     var item = document.createElement('li');
-    item.innerHTML = recipe.title;
+    var html = template
+                .replace(/TITLE/, recipe.title)
+                .replace(/INGREDIENTS/, recipe.ingredients.map(function (i) {
+                  return '<span>' + i.name + '</span>';
+                }, []).join(' '));
+    item.innerHTML = html;
     item.className = recipe_class(recipe);
     item.dataset.recipeKey = recipeKey;
     return item;
