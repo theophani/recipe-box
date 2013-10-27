@@ -129,3 +129,49 @@ body > div {
 .contents {
   white-space: pre-wrap;
 }
+
+
+/* recipe appearance */
+
+.recipe_viewer h1 {
+  font-size: 2em;
+  margin: 0 0 0.5em 0;
+}
+
+.recommended {
+  display: inline-block;
+  padding: 5px 10px 5px 10px;
+  background-color: hotpink;
+  font-size: 0.75em;
+  color: white;
+  text-transform: uppercase;
+  font-family: Helvetica Neue;
+  font-weight: normal;
+  letter-spacing: 1px;
+}
+
+.remark {
+  font-style: italic;
+  font-weight: bold;
+  margin: 1em 20px;
+}
+.remark:after {
+  content: " ”";
+}
+.remark:before {
+  content: "“ ";
+}
+
+.recipe_viewer .ingredients span {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.recipe_viewer .ingredients {
+  margin: 0.75em 0;
+}
+
+.contents {
+  margin-top: 1em;
+  padding-top: 1.5em;
+  border-top: solid 1px #333;
+}

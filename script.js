@@ -307,10 +307,11 @@ function recipes_list (box) {
 
 function recipe_viewer () {
   var template =  '<h1>TITLE</h1>';
-      template += '<div class="recommended">RECOMMENDED</div>';
+      template +=  'RECOMMENDED';
+      // template += '<div class="ingredients">INGREDIENTS</div>';
       template += '<blockquote class="remark">REMARK</blockquote>';
-      template += '<div class="ingredients">INGREDIENTS</div>';
       template += '<div class="contents">CONTENTS</div>';
+  var recommended_template = '<span class="recommended">Tiffany Recommends</span>'
   var viewer = document.querySelector('.recipe_viewer');
   var recipe = false;
 
@@ -324,8 +325,8 @@ function recipe_viewer () {
                 .replace(/INGREDIENTS/, recipe.ingredients.map(function (i) {
                   return '<span>' + i.name + '</span>';
                 }, []).join(' '))
-                .replace(/RECOMMENDED/, recipe.recommended ? "Tiffany Recommends" : "")
-                .replace(/REMARK/, recipe.remark)
+                .replace(/RECOMMENDED/, recipe.recommended ? recommended_template : "")
+                .replace(/REMARK/, recipe.remark ? recipe.remark : "")
                 .replace(/CONTENTS/, recipe.contents);
     viewer.innerHTML = html;
     document.body.className = "viewing_recipe";
