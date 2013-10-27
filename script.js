@@ -184,16 +184,29 @@ function recipes_list (box) {
   var ul = document.createElement('ul');
   var items = [];
   var selected_ingredients = [];
+  var selected_recipe = false;
   var template =  '<h1>TITLE</h1>';
       template += '<div class="ingredients">INGREDIENTS</div>';
 
+  function toggle (recipe) {
+    if (selected_recipe === recipe) {
+      selected_recipe = false;
+    } else {
+      selected_recipe = recipe;
+    }
+  }
+
   function recipe_class (recipe) {
+    if (recipe === selected_recipe) {
+      return "recipe selectable selected";
+    }
+
     if (!selected_ingredients.length) {
       return "recipe";
     }
 
     if (is_subset(selected_ingredients)(recipe.ingredients)) {
-      return "recipe selected";
+      return "recipe selectable";
     }
 
     return "recipe";
@@ -243,14 +256,46 @@ function recipes_list (box) {
     document.querySelector('.recipes_list').appendChild(ul);
   }
 
+  function set_selected (selected) {
+    selected_ingredients = selected.map(function (name) {
+      return box.ingredients[name];
+    });
+    render();
+  }
+
+  function init_from_query () {
+    var matches = window.location.search.match(/ingredients=(.*)/);
+    if (matches) {
+      set_selected(decodeURIComponent(matches[1]).split(":"));
+    }
+  }
+
   function prepare_recipes (recipes) {
     put_in_box(recipes);
     display_recipes();
+    init_from_query();
+  }
+
+  function broadcast () {
+    var data = { detail: { selected_recipe: selected_recipe } };
+    var evt = new CustomEvent('recipe:selected', data)
+    document.dispatchEvent(evt);
   }
 
   document.addEventListener('ingredient:selected', function (e) {
     selected_ingredients = e.detail.selected_ingredients;
     render();
+  });
+
+  ul.addEventListener('click', function (e) {
+    var li = e.target;
+    while (li.tagName !== 'LI' && li !== ul) {
+      li = li.parentElement;
+    }
+    var recipe = box.recipes[li.dataset.recipeKey];
+    toggle(recipe);
+    render();
+    broadcast();
   });
 
   ajax({
@@ -260,10 +305,43 @@ function recipes_list (box) {
   });
 }
 
+function recipe_viewer () {
+  var template =  '<h1>TITLE</h1>';
+      template += '<div class="recommended">RECOMMENDED</div>';
+      template += '<blockquote class="remark">REMARK</blockquote>';
+      template += '<div class="ingredients">INGREDIENTS</div>';
+      template += '<div class="contents">CONTENTS</div>';
+  var viewer = document.querySelector('.recipe_viewer');
+  var recipe = false;
+
+  function render () {
+    if (!recipe) {
+      document.body.className = "";
+      return;
+    }
+    var html = template
+                .replace(/TITLE/, recipe.title)
+                .replace(/INGREDIENTS/, recipe.ingredients.map(function (i) {
+                  return '<span>' + i.name + '</span>';
+                }, []).join(' '))
+                .replace(/RECOMMENDED/, recipe.recommended ? "Tiffany Recommends" : "")
+                .replace(/REMARK/, recipe.remark)
+                .replace(/CONTENTS/, recipe.contents);
+    viewer.innerHTML = html;
+    document.body.className = "viewing_recipe";
+  }
+
+  document.addEventListener('recipe:selected', function (e) {
+    recipe = e.detail.selected_recipe;
+    render();
+  });
+}
+
 function prepare_ingredients (recipe_ingredients) {
   var box = build_box(recipe_ingredients);
   ingredients_list(box);
   recipes_list(box);
+  recipe_viewer();
 }
 
 ajax({

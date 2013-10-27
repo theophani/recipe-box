@@ -9,7 +9,7 @@ body {
 
 ul {
   margin: 0;
-  padding: 5px 0;
+  padding: 0;
 }
 
 li {
@@ -27,7 +27,7 @@ li:hover {
   display: none;
 }
 
-.ingredient.also_with_selected, .ingredient.selected, .recipe.selected {
+.ingredient.also_with_selected, .ingredient.selected, .recipe.selectable {
   display: list-item;
 }
 
@@ -48,6 +48,7 @@ body > div {
   overflow-x: scroll;
   left: 0;
   top: 0;
+  padding: 5px 0;
 }
 
 .recipes_list {
@@ -81,6 +82,11 @@ body > div {
 }
 
 .recipes_list li:hover {
+  background-color: rgba(12, 138, 179, 0.8);
+  color: ivory;
+}
+
+.recipes_list li.selected {
   background-color: rgb(12, 138, 179);
   color: ivory;
 }
@@ -118,4 +124,8 @@ body > div {
 
 .viewing_recipe .recipe_viewer {
   left: 50%;
+}
+
+.contents {
+  white-space: pre-wrap;
 }
