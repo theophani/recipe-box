@@ -91,10 +91,10 @@ body > div {
   background-color: ivory;
   position: fixed;
   overflow-x: scroll;
-  left: 66%;
+  left: 50%;
   top: 0;
   color: #333;
-  width: 34%;
+  width: 50%;
   padding: 20px;
 }
 
@@ -104,12 +104,12 @@ body > div {
 }
 
 .viewing_recipe .ingredients_list {
-  width: 33%;
+  width: 20%;
 }
 
 .viewing_recipe .recipes_list {
-  width: 33%;
-  left: 33%;
+  width: 30%;
+  left: 20%;
 }
 
 .recipe_viewer {
@@ -117,5 +117,5 @@ body > div {
 }
 
 .viewing_recipe .recipe_viewer {
-  left: 66%;
+  left: 50%;
 }
