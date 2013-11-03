@@ -2,8 +2,9 @@ function pushState (selected) {
   var selected_ingredients = selected.map(function (i) {
     return i.name;
   });
-  var pageUrl = "?ingredients=" + selected_ingredients.join(':');
+  var search = "?ingredients=" + selected_ingredients.join(':');
   var pageState = { selected_ingredients: selected_ingredients };
+  var pageUrl = selected.length ? search : "";
   window.history.pushState(pageState, "", pageUrl);
 }
 
