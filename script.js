@@ -1,12 +1,61 @@
-function pushState (selected) {
-  var selected_ingredients = selected.map(function (i) {
-    return i.name;
-  });
-  var search = "?ingredients=" + selected_ingredients.join(':');
-  var pageState = { selected_ingredients: selected_ingredients };
-  var pageUrl = selected.length ? search : "";
-  window.history.pushState(pageState, "", pageUrl);
-}
+var pushState = function () {
+
+  var selected_ingredients = function () {
+    var ingredients = window.location.search.match(/ingredients=(.*)/);
+    if (ingredients) {
+      ingredients = ingredients[1].split("&")[0];
+      return decodeURIComponent(ingredients).split(":");
+    }
+    return [];
+  }();
+
+  var selected_recipe = function () {
+    var recipe = window.location.search.match(/recipe=(.*)/);
+    if (recipe) {
+      recipe = recipe[1].split("&")[0];
+      return decodeURIComponent(recipe);
+    }
+    return false;
+  }();
+
+  function ingredients (selected) {
+    selected_ingredients = selected.map(function (i) {
+      return i.name;
+    });
+    pushState();
+  }
+
+  function recipe (selected) {
+    selected_recipe = selected ? selected.key : false;
+    pushState();
+  }
+
+  function pushState () {
+    var pageUrl;
+    var pageState = {
+      selected_ingredients: selected_ingredients,
+      selected_recipe: selected_recipe
+    };
+    var url_parts = [];
+
+    if (selected_ingredients.length) {
+      url_parts.push("ingredients=" + selected_ingredients.join(':'));
+    }
+
+    if (selected_recipe) {
+      url_parts.push("recipe=" + selected_recipe);
+    }
+
+    pageUrl = url_parts.length ? "?" + url_parts.join("&") : "" ;
+
+    window.history.pushState(pageState, "", pageUrl);
+  }
+
+  return {
+    ingredients: ingredients,
+    recipe: recipe,
+  };
+}();
 
 function values_per_key (pairs, key_name, value_name) {
   return pairs.reduce(function (results, pair) {
@@ -145,9 +194,10 @@ function ingredients_list (box) {
   }
 
   function init_from_query () {
-    var matches = window.location.search.match(/ingredients=(.*)/);
-    if (matches) {
-      set_selected(decodeURIComponent(matches[1]).split(":"));
+    var ingredients = window.location.search.match(/ingredients=(.*)/);
+    if (ingredients) {
+      ingredients = ingredients[1].split("&")[0];
+      set_selected(decodeURIComponent(ingredients).split(":"));
     }
   }
 
@@ -165,16 +215,16 @@ function ingredients_list (box) {
     render();
   });
 
-  window.onpopstate = function (e) {
+  window.addEventListener('popstate', function (e) {
     var selected_ingredients = e.state ? e.state.selected_ingredients : [];
     set_selected(selected_ingredients);
-  };
+  });
 
   ul.addEventListener('click', function (e) {
     if (e.target.tagName !== 'LI') return;
     var ingredient = box.ingredients[e.target.dataset.ingredientKey];
     toggle(ingredient);
-    pushState(selected);
+    pushState.ingredients(selected);
     broadcast();
   });
 
@@ -257,22 +307,35 @@ function recipes_list (box) {
     document.querySelector('.recipes_list').appendChild(ul);
   }
 
-  function set_selected (selected) {
-    selected_ingredients = selected.map(function (name) {
+  function set_selected (ingredients, recipeKey) {
+    selected_ingredients = ingredients.map(function (name) {
       return box.ingredients[name];
     });
+    selected_recipe = recipeKey ? box.recipes[recipeKey] : false;
     render();
   }
 
   function init_from_query () {
-    var matches = window.location.search.match(/ingredients=(.*)/);
-    if (matches) {
-      set_selected(decodeURIComponent(matches[1]).split(":"));
+    var ingredients = window.location.search.match(/ingredients=(.*)/);
+    var recipeKey = window.location.search.match(/recipe=(.*)/);
+
+    if (ingredients) {
+      ingredients = ingredients[1].split("&")[0];
+      ingredients = decodeURIComponent(ingredients).split(":")
+    } else {
+      ingredients = [];
     }
+
+    if (recipeKey) {
+      recipeKey = recipeKey[1].split("&")[0];
+    }
+
+    set_selected(ingredients, recipeKey);
   }
 
   function prepare_recipes (recipes) {
     put_in_box(recipes);
+    recipe_viewer(box);
     display_recipes();
     init_from_query();
   }
@@ -288,6 +351,16 @@ function recipes_list (box) {
     render();
   });
 
+  document.addEventListener('recipe:selected', function (e) {
+    render();
+  });
+
+  window.addEventListener('popstate', function (e) {
+    var ingredients = e.state ? e.state.selected_ingredients : [];
+    var recipeKey = e.state ? e.state.selected_recipe : false;
+    set_selected(ingredients, recipeKey);
+  });
+
   ul.addEventListener('click', function (e) {
     var li = e.target;
     while (li.tagName !== 'LI' && li !== ul) {
@@ -295,7 +368,7 @@ function recipes_list (box) {
     }
     var recipe = box.recipes[li.dataset.recipeKey];
     toggle(recipe);
-    render();
+    pushState.recipe(selected_recipe);
     broadcast();
   });
 
@@ -306,7 +379,7 @@ function recipes_list (box) {
   });
 }
 
-function recipe_viewer () {
+function recipe_viewer (box) {
   var template =  '<h1>TITLE</h1>';
       template +=  'RECOMMENDED';
       // template += '<div class="ingredients">INGREDIENTS</div>';
@@ -317,6 +390,7 @@ function recipe_viewer () {
   var recipe = false;
 
   function render () {
+    console.log(recipe)
     if (!recipe) {
       document.body.className = "";
       return;
@@ -333,17 +407,34 @@ function recipe_viewer () {
     document.body.className = "viewing_recipe";
   }
 
+  function init_from_query () {
+    var recipeKey = window.location.search.match(/recipe=(.*)/);
+
+    if (recipeKey) {
+      recipeKey = recipeKey[1].split("&")[0];
+      recipe = box.recipes[recipeKey];
+      render();
+    }
+  }
+
   document.addEventListener('recipe:selected', function (e) {
     recipe = e.detail.selected_recipe;
     render();
   });
+
+  window.addEventListener('popstate', function (e) {
+    var recipeKey = e.state ? e.state.selected_recipe : false;
+    recipe = recipeKey ? box.recipes[recipeKey] : false;
+    render();
+  });
+
+  init_from_query();
 }
 
 function prepare_ingredients (recipe_ingredients) {
   var box = build_box(recipe_ingredients);
   ingredients_list(box);
   recipes_list(box);
-  recipe_viewer();
 }
 
 ajax({
