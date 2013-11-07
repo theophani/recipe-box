@@ -237,7 +237,9 @@ function recipes_list (box) {
   var selected_ingredients = [];
   var selected_recipe = false;
   var template =  '<h1>TITLE</h1>';
+      template +=  'RECOMMENDED';
       template += '<div class="ingredients">INGREDIENTS</div>';
+  var recommended_template = '<span class="recommended">Tiffany Recommends</span>'
 
   function toggle (recipe) {
     if (selected_recipe === recipe) {
@@ -278,6 +280,7 @@ function recipes_list (box) {
     var item = document.createElement('li');
     var html = template
                 .replace(/TITLE/, recipe.title)
+                .replace(/RECOMMENDED/, recipe.recommended ? recommended_template : "")
                 .replace(/INGREDIENTS/, recipe.ingredients.map(function (i) {
                   return '<span>' + i.name + '</span>';
                 }, []).join(' '));
@@ -383,9 +386,10 @@ function recipe_viewer (box) {
   var template =  '<h1>TITLE</h1>';
       template +=  'RECOMMENDED';
       // template += '<div class="ingredients">INGREDIENTS</div>';
-      template += '<blockquote class="remark">REMARK</blockquote>';
+      template += 'REMARK';
       template += '<div class="contents">CONTENTS</div>';
   var recommended_template = '<span class="recommended">Tiffany Recommends</span>'
+  var remark_template = '<blockquote class="remark">REMARK</blockquote>';
   var viewer = document.querySelector('.recipe_viewer');
   var recipe = false;
 
@@ -401,7 +405,7 @@ function recipe_viewer (box) {
                   return '<span>' + i.name + '</span>';
                 }, []).join(' '))
                 .replace(/RECOMMENDED/, recipe.recommended ? recommended_template : "")
-                .replace(/REMARK/, recipe.remark ? recipe.remark : "")
+                .replace(/REMARK/, recipe.remark ? remark_template.replace(/REMARK/, recipe.remark) : "")
                 .replace(/CONTENTS/, recipe.contents);
     viewer.innerHTML = html;
     document.body.className = "viewing_recipe";

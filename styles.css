@@ -72,6 +72,7 @@ body > div {
 
 .ingredients {
   line-height: 1.75;
+  margin-top: 0.5em;
 }
 
 .ingredients span {
@@ -89,6 +90,11 @@ body > div {
 .recipes_list li.selected {
   background-color: rgb(12, 138, 179);
   color: ivory;
+}
+
+.recipes_list .recommended {
+  background-color: rgba(51, 51, 51, 0.5);
+  margin: 0.1em 0;
 }
 
 /* third pane */
@@ -130,7 +136,6 @@ body > div {
   white-space: pre-wrap;
 }
 
-
 /* recipe appearance */
 
 .recipe_viewer h1 {
@@ -140,7 +145,7 @@ body > div {
 
 .recommended {
   display: inline-block;
-  padding: 5px 10px 5px 10px;
+  padding: 0.5em 0.75em;
   background-color: hotpink;
   font-size: 0.75em;
   color: white;
@@ -153,13 +158,15 @@ body > div {
 .remark {
   font-style: italic;
   font-weight: bold;
-  margin: 1em 20px;
+  padding: 1em 20px 0.25em 20px;
+  margin: 1em 0;
+  border-top: solid 1px #333;
 }
 .remark:after {
-  content: " ”";
+  content: "”";
 }
 .remark:before {
-  content: "“ ";
+  content: "“";
 }
 
 .recipe_viewer .ingredients span {
