@@ -197,6 +197,11 @@ and (max-device-width : 480px) {
     padding: 3px 10px;
   }
 
+  li:hover {
+    background-color: inherit;
+    color: inherit;
+  }
+
   .recipes_list .ingredients {
     font-size: 0.75em;
   }
