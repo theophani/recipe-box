@@ -394,7 +394,6 @@ function recipe_viewer (box) {
   var recipe = false;
 
   function render () {
-    console.log(recipe)
     if (!recipe) {
       document.body.className = "";
       return;
